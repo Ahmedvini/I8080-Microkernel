@@ -14,7 +14,6 @@ This project simulates a microkernel-based operating system using a custom-built
 - [How It Works](#how-it-works)
 - [Sample Programs](#sample-programs)
 - [Educational Value](#educational-value)
-- [License](#license)
 
 ---
 
