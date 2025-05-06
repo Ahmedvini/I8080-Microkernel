@@ -66,6 +66,7 @@ This is an educational operating system built around an Intel 8080 emulator. The
 ├── MicroKernel.asm               # Microkernel assembly code
 ├── *.asm                         # User-level programs (Sum.asm, Primes.asm)
 ├── *.com                         # Compiled 8080 binaries
+```
 ## 🚀 Getting Started
 
 ### 1. Clone the Repository
@@ -73,12 +74,14 @@ This is an educational operating system built around an Intel 8080 emulator. The
 ```bash
 git clone https://github.com/onurpolattimur/Microkernel-Operating-System-with-i8080.git
 cd Microkernel-Operating-System-with-i8080
+```
 ### 2. Build the Emulator
 
 If no Makefile exists, compile manually using the following command:
 
 ```bash
 g++ -std=c++11 -o GTUOS 8080emu.cpp memory.cpp gtuos.cpp main.cpp
+```
 ### 3. Assemble Sample Programs
 
 Use an online Intel 8080 assembler like:
@@ -100,6 +103,7 @@ Use the following command to run your assembled program:
 
 ```bash
 ./GTUOS Sum.com 0
+```
 ---
 
 ## 🔧 How It Works
