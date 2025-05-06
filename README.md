@@ -55,6 +55,7 @@ This is an educational operating system built around an Intel 8080 emulator. The
 +-------------------------+
 |    User Programs (.com) | ← Written in Intel 8080 Assembly
 +-------------------------+
+```
 ## 📂 Project Structure
 
 ```text
