@@ -934,7 +934,7 @@ namespace {
       *low = memory->at(state->sp);
       *high = memory->at(state->sp + 1);
       state->sp += 2;
-          //printf ("%04x %04x pop\n", state->pc, state->sp);
+          printf ("%04x %04x pop\n", state->pc, state->sp);
     }
 
     void FlagsZSP(State8080 *state, uint8_t value) {
@@ -942,7 +942,7 @@ namespace {
       state->cc.s = (0x80 == (value & 0x80));
       state->cc.p = parity(value, 8);
     }
-} // End of unnamed namespace
+}
 
 
 unsigned CPU8080::Emulate8080p(int debug) {
@@ -957,7 +957,7 @@ unsigned CPU8080::Emulate8080p(int debug) {
 	else{
 	   	
 		lastOpcode = &interrupt_code;
-		//Disassemble8080Op(memory,*lastOpcode);
+		Disassemble8080Op(memory,*lastOpcode);
 		onInterrupt();
 		state->pc-=2; 
 		((Memory *)(memory))->setBaseRegister(0);

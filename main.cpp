@@ -3,8 +3,7 @@
 #include "gtuos.h"
 #include "memory.h"
 
-// This is just a sample main function, you should rewrite this file to handle problems
-// with new multitasking and virtual memory additions.
+
 int main (int argc, char**argv)
 {
     if (argc != 3){
@@ -19,7 +18,7 @@ int main (int argc, char**argv)
 
     theCPU.ReadFileIntoMemoryAt(argv[1], 0x0000);
     for(int i=0;i<1000;i++){
-        //std::cout <<(int)mem.physicalAt(i);
+        std::cout <<(int)mem.physicalAt(i);
     }
 
     int i=1;
