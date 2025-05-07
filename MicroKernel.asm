@@ -43,7 +43,6 @@ GTU_OS:	PUSH D
 	ret
 	; ---------------------------------------------------------------
 
-; YOU SHOULD NOT CHANGE ANYTHING ABOVE THIS LINE        
 
 org 0D00H	
 
@@ -68,8 +67,8 @@ begin:
 
 	MVI A, 0
 	STA runningProcess
-	STA sum	
-	
+	STA sum
+
 	;Set next
 	MVI A, 1
 	LXI H, 0202H ;Next pointer of first process
@@ -308,84 +307,84 @@ readFromInterruptBuffer:
 
 	;------------------------------------------------------------
 	;Print process states
-	;POP PSW ;A=CurrentProcess
-	;PUSH B
-	;PUSH PSW
+	POP PSW ;A=CurrentProcess
+	PUSH B
+	PUSH PSW
 
-	;LXI B, processStates
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
-	;POP PSW
+	LXI B, processStates
+	MVI A, PRINT_STR
+	CALL GTU_OS
+	POP PSW
 
-	;PROCESS ID
-	;PUSH PSW
-	;MOV B, A
-	;MVI A, PRINT_B
-	;CALL GTU_OS
+	PROCESS ID
+	PUSH PSW
+	MOV B, A
+	MVI A, PRINT_B
+	CALL GTU_OS
 
-	;LXI B, line
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
-	;POP PSW
+	LXI B, line
+	MVI A, PRINT_STR
+	CALL GTU_OS
+	POP PSW
 
-	;PROCESS NAME
-	;ADI 2
-	;MOV H, A
-	;MVI L, 11h
-	;MOV B, M
-	;INX H
-	;MOV C, M
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
+	PROCESS NAME
+	ADI 2
+	MOV H, A
+	MVI L, 11h
+	MOV B, M
+	INX H
+	MOV C, M
+	MVI A, PRINT_STR
+	CALL GTU_OS
 
-	;LXI B, line
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
+	LXI B, line
+	MVI A, PRINT_STR
+	CALL GTU_OS
 
-	;PC.LOW
-	;LXI D, 265	;265
-	;LDAX D
-	;MOV B, A
-	;MVI A, PRINT_B
-	;CALL GTU_OS
+	PC.LOW
+	LXI D, 265	;265
+	LDAX D
+	MOV B, A
+	MVI A, PRINT_B
+	CALL GTU_OS
 
-	;LXI B, line
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
+	LXI B, line
+	MVI A, PRINT_STR
+	CALL GTU_OS
 
-	;PC.HI
-	;INX D	;266
-	;LDAX D
-	;MOV B, A
-	;MVI A, PRINT_B
-	;CALL GTU_OS
+	PC.HI
+	INX D	;266
+	LDAX D
+	MOV B, A
+	MVI A, PRINT_B
+	CALL GTU_OS
 
-	;LXI B, line
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
+	LXI B, line
+	MVI A, PRINT_STR
+	CALL GTU_OS
 
-	;BASE.LOW
-	;INX D 	;267
-	;LDAX D
-	;MOV B, A
-	;MVI A, PRINT_B
-	;CALL GTU_OS
+	BASE.LOW
+	INX D 	;267
+	LDAX D
+	MOV B, A
+	MVI A, PRINT_B
+	CALL GTU_OS
 
-	;LXI B, line
-	;MVI A, PRINT_STR
-	;CALL GTU_OS
+	LXI B, line
+	MVI A, PRINT_STR
+	CALL GTU_OS
 
-	;BASE.HI
-	;INX D	;268
-	;LDAX D
-	;MOV B, A
-	;MVI A, PRINT_B
-	;CALL GTU_OS
+	BASE.HI
+	INX D	;268
+	LDAX D
+	MOV B, A
+	MVI A, PRINT_B
+	CALL GTU_OS
 
 
-	;CALL printNL
+	CALL printNL
 
-	;POP B
+	POP B
 	;------------------------------------------------------------
 	; Load process from process table according to next process id in B
 	MOV A, B 
