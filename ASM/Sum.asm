@@ -35,11 +35,6 @@ GTU_OS:	PUSH D
 	pop d
 	pop D
 	ret
-	; ---------------------------------------------------------------
-	; YOU SHOULD NOT CHANGE ANYTHING ABOVE THIS LINE        
-
-	;This program adds numbers from 0 to 10. The result is stored at variable
-	; sum. The results is also printed on the screen.
 
 sum	ds 2 ; will keep the sum
 

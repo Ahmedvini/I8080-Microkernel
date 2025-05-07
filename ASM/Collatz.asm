@@ -1,8 +1,7 @@
 ; 8080 assembler code
 	.hexfile Collatz.hex
 	.binfile Collatz.com
-	; try "hex" for downloading in hex format
-	.download bin  
+	.download bin
 	.objcopy gobjcopy
 	.postbuild echo "OK!"
 	;.nodump
@@ -29,17 +28,12 @@ GTU_OS:	PUSH D
 	push H
 	push psw
 	nop	; This is where we run our OS in C++, see the CPU8080::isSystemCall()
-		; function for the detail.
 	pop psw
 	pop h
 	pop d
 	pop D
 	ret
-	; ---------------------------------------------------------------
-	; YOU SHOULD NOT CHANGE ANYTHING ABOVE THIS LINE        
 
-	;This program adds numbers from 0 to 10. The result is stored at variable
-	; sum. The results is also printed on the screen.
 
 
 
@@ -59,7 +53,6 @@ MULT1:  RAR
 DONE: RET
 
 
-; DIVISION PROCEDURE TAKEN FROM THE 8080BOOK GIVEN IN THE FILES OF HOMEWORK
 DIV:	MOV A,D 	; NEGATE THE DIVISOR
 		CMA
 		MOV	D,A

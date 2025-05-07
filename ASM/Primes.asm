@@ -1,8 +1,7 @@
 ; 8080 assembler code
 	.hexfile ShowPrimes.hex
 	.binfile ShowPrimes.com
-	; try "hex" for downloading in hex format
-	.download bin  
+	.download bin
 	.objcopy gobjcopy
 	.postbuild echo "OK!"
 	;.nodump
@@ -21,8 +20,7 @@
 	org 000H
 	jmp begin
 
-	; Start of our Operating System
-GTU_OS:	
+GTU_OS:
 	PUSH D
 	push D
 	push H
@@ -34,23 +32,12 @@ GTU_OS:
 	pop D
 	pop D
 	ret
-	; ---------------------------------------------------------------
-	; YOU SHOULD NOT CHANGE ANYTHING ABOVE THIS LINE        
-
-	;This program adds numbers from 0 to 10. The result is stored at variable
-	; sum. The results is also printed on the screen.
 
 
 number dw 1 //Starting number for printing numbers.
 newLine: dw 00AH,00H ;null terminated newline string
 primeText:	dw ' prime',00H ; null terminated string
-;DIVIDE OPERATION from cookbook.
-;Before divide operation:
-;   BC -> Divident
-;   DE -> Divider
-;After divide operation:
-;   C  -> Quatient
-;   E  -> Remainder
+
 DIV:	MOV A,D 	; NEGATE THE DIVISOR
 		CMA
 		MOV	D,A
@@ -101,13 +88,7 @@ printnewLine:
 	call GTU_OS			; call the OS
 	ret
 
-;Print 16 bit decimal number to screen.
-;This procedure can print only between 0-2600 numbers.
-;I print the number in two part.
-;    1516|_10_
-;    -___| 151
-;       6
-;First print quatient and then print remainder.
+
 printNumber:
 	LXI D,10 ;LOAD D = 10 to divide number(BC) 10 -> number / 10
 	
@@ -153,11 +134,7 @@ isPrimeNumber:
     RZ
 
 
-;Main control procedure controls current number is prime.
-;This procedure, divides current number by any less number starting from current number -1.
-;After divide operation, if remainder is zero exit the loop and do not print anyting on the screen.
-;Else decrease divider number and continue with divide operation.
-;After all of that, if divider number is 1 exit the control loop and prime that number is prime.
+
 primeloop:
     ;We will start divide op. from number-1. So, decrease HL.
     DCX H           ;HL = HL-1
