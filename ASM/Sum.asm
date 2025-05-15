@@ -1,29 +1,29 @@
-	; 8080 assembler code
-	.hexfile Sum.hex
-	.binfile Sum.com
-	; try "hex" for downloading in hex format
-	.download bin  
-	.objcopy gobjcopy
-	.postbuild echo "OK!"
-	;.nodump
+; 8080 assembler code
+.hexfile Sum.hex
+.binfile Sum.com
+; try "hex" for downloading in hex format
+.download bin  
+.objcopy gobjcopy
+.postbuild echo "OK!"
+;.nodump
 
-	; OS call list
-	PRINT_B		equ 4
-	PRINT_MEM	equ 3
-	READ_B		equ 7
-	READ_MEM	equ 2
-	PRINT_STR	equ 1
-	READ_STR	equ 8
-	PROCESS_EXIT	equ 9
-	SET_QUANTUM	equ 6
+; OS call list
+PRINT_B		equ 4
+PRINT_MEM	equ 3
+READ_B		equ 7
+READ_MEM	equ 2
+PRINT_STR	equ 1
+READ_STR	equ 8
+PROCESS_EXIT	equ 9
+SET_QUANTUM	equ 6
 
-	; Position for stack pointer
-	stack   equ 04000h
+; Position for stack pointer
+stack   equ 04000h
 
-	org 000H
-	jmp begin
+org 000H
+jmp begin
 
-	; Start of our Operating System
+; Start of our Operating System
 GTU_OS:	PUSH D
 	push D
 	push H
@@ -46,13 +46,12 @@ loop:
 	ADD c		; A = A + C
 	DCR c		; --C
 	JNZ loop	; goto loop if C!=0
-	STA SUM		; SUM = A
-	LDA SUM		; A = SUM
+	STA sum		; sum = A
+	LDA sum		; A = sum
 	; Now we will call the OS to print the value of sum
 	MOV B, A	; B = A
 	MVI A, PRINT_B	; store the OS call code to A
 	call GTU_OS	; call the OS
 
-	MVI A,9
+	MVI A,PROCESS_EXIT
 	CALL GTU_OS
-

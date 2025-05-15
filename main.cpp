@@ -1,8 +1,7 @@
 #include <iostream>
-#include "8080emuCPP.h"
-#include "gtuos.h"
-#include "memory.h"
-
+#include "emulator_base.h"
+#include "os_core.h"
+#include "memory_manager.h"
 
 int main (int argc, char**argv)
 {

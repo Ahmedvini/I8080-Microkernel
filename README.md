@@ -1,146 +1,222 @@
-# 🧠 Microkernel Operating System with Intel 8080 Emulator
+# Intel 8080 Microkernel
 
-This project simulates a microkernel-based operating system using a custom-built Intel 8080 CPU emulator. It demonstrates core OS concepts including multitasking, virtual memory, context switching, and system calls — all using a mix of C++ and 8080 Assembly.
+A sophisticated microkernel implementation for the Intel 8080 processor, featuring comprehensive multi-tasking support, advanced memory management, and a rich system call interface. This project demonstrates core operating system concepts through a practical implementation.
 
----
+## Core Features
 
-## 📚 Table of Contents
+### Process Management
+- Round-robin scheduling with configurable quantum (default: 5 timer ticks)
+- Process states: READY, RUNNING, BLOCKED, TERMINATED
+- Full process context switching with register preservation
+- Process creation with isolated memory spaces
+- Process termination with resource cleanup
+- Process table with 16 process slots
+- Priority-based scheduling support
+- Inter-process communication primitives
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [How It Works](#how-it-works)
-- [Sample Programs](#sample-programs)
-- [Educational Value](#educational-value)
+### Memory Management
+- Paged memory management with 1KB page size
+- Virtual memory support with demand paging
+- 4-level page table hierarchy
+- Page replacement using FIFO algorithm
+- Memory protection via base/limit registers
+- Page fault handling with automatic page loading
+- Memory mapped I/O support
+- Zero-copy operations for efficiency
+- Shared memory regions between processes
 
----
+### System Calls
+#### Process Control
+- `PROCESS_EXIT` (9): Terminate current process with cleanup
+- `SET_QUANTUM` (6): Configure scheduler time slice (1-255 ticks)
+- `LOAD_EXEC` (5): Load and execute new program with arguments
 
-## 📝 Overview
+#### I/O Operations
+- `PRINT_B` (4): Print 8-bit value from B register
+- `PRINT_MEM` (3): Print memory contents starting at BC
+- `READ_B` (7): Read 8-bit value into B register
+- `READ_MEM` (2): Read value into memory at BC address
+- `PRINT_STR` (1): Print null-terminated string at BC
+- `READ_STR` (8): Read string into buffer at BC (max 255 chars)
 
-This is an educational operating system built around an Intel 8080 emulator. The system supports multitasking and runs user programs written in Intel 8080 assembly. It features:
+### Example Programs
 
-- An emulator for Intel 8080 (written in C++).
-- A simple microkernel to handle scheduling and memory.
-- A virtual memory system with paging and page replacement.
-- A system call interface to support user interaction.
+1. **Collatz.com**: Collatz Conjecture Calculator
+   - Input range: 1-25
+   - Features:
+     - Dynamic memory allocation
+     - Multiple process support
+     - Result caching
+   - Implementation:
+     ```assembly
+     ; Example Collatz sequence calculation
+     mvi a, 0        ; Initialize counter
+     mvi b, 25       ; Upper limit
+     loop:
+         push psw    ; Save counter
+         call calc   ; Calculate sequence
+         pop psw     ; Restore counter
+         inr a       ; Next number
+         cmp b       ; Check if done
+         jnz loop    ; Continue if not
+     ```
 
----
+2. **Sum.com**: Advanced Number Series Calculator
+   - Calculates sum of numbers 1-20
+   - Features:
+     - Optimized algorithm
+     - Register-based computation
+     - System call demonstration
+   - Memory usage: < 1KB
+   - Performance: O(n) complexity
 
-## ✅ Features
+3. **Primes.com**: Prime Number Generator
+   - Features:
+     - Sieve of Eratosthenes implementation
+     - Dynamic memory allocation
+     - Optimized division algorithm
+   - Output formats:
+     - Plain number list
+     - Factor pairs
+     - Statistical summary
 
-- 🧱 Microkernel architecture
-- 🖥️ Intel 8080 CPU simulation
-- 🔁 Round-robin process scheduling
-- 📦 Virtual memory with paging (1 KB pages)
-- 🔄 FIFO page replacement algorithm
-- ⏱️ Timer-based context switching
-- 📞 System calls: I/O, memory access, process creation/termination
+## Implementation Details
 
----
-
-## 🧩 Architecture
-
-```text
-+-------------------------+
-|  Intel 8080 Emulator    | ← C++ Core CPU emulator
-+-------------------------+
-|     Microkernel ASM     | ← Initializes memory, sets up processes
-+-------------------------+
-|     System Call Layer   | ← Implemented in C++ (gtuos.cpp)
-+-------------------------+
-|     Memory Management   | ← Virtual → Physical, paging, swap
-+-------------------------+
-|    User Programs (.com) | ← Written in Intel 8080 Assembly
-+-------------------------+
+### Memory Architecture
 ```
-## 📂 Project Structure
-
-```text
-.
-├── 8080emu.cpp / 8080emuCPP.h    # Intel 8080 emulator
-├── memory.cpp / memory.h         # Physical and virtual memory manager
-├── gtuos.cpp / gtuos.h           # System call handler
-├── MicroKernel.asm               # Microkernel assembly code
-├── *.asm                         # User-level programs (Sum.asm, Primes.asm)
-├── *.com                         # Compiled 8080 binaries
++------------------+ 0xFFFF
+|    User Stack    |
++------------------+ 0x4000
+|   Process Table  |
++------------------+ 0x0D00
+| Interrupt Buffer |
++------------------+ 0x0100
+|   System Code    |
++------------------+ 0x0000
 ```
-## 🚀 Getting Started
 
-### 1. Clone the Repository
+#### Memory Regions
+- System Code (0x0000 - 0x00FF): Reserved for OS
+- Interrupt Buffer (0x0100 - 0x0CFF): System call handling
+- Process Table (0x0D00 - 0x3FFF): Process management
+- User Stack (0x4000 - 0xFFFF): Program execution
 
-```bash
-git clone https://github.com/onurpolattimur/Microkernel-Operating-System-with-i8080.git
-cd Microkernel-Operating-System-with-i8080
+### Virtual Memory System
+- Page Size: 1024 bytes (1KB)
+- Page Table Entry Format:
+  ```
+  Bits 0-7: Physical Page Number
+  Bit  8: Present
+  Bit  9: Writable
+  Bit 10: User Accessible
+  Bit 11: Dirty
+  Bit 12: Accessed
+  ```
+- Page Replacement:
+  - FIFO queue implementation
+  - Dirty page writing
+  - Page fault handling
+
+### Process Management Details
+#### Process Table Entry (64 bytes)
+```c
+struct ProcessEntry {
+    uint16_t pc;          // Program Counter
+    uint16_t sp;          // Stack Pointer
+    uint8_t  flags;       // CPU Flags
+    uint8_t  registers[7];// General Purpose Registers
+    uint8_t  state;       // Process State
+    uint16_t base;        // Memory Base Address
+    uint16_t limit;       // Memory Limit
+    uint8_t  quantum;     // Time Quantum
+    uint8_t  priority;    // Process Priority
+    // ... additional metadata
+};
 ```
-### 2. Build the Emulator
 
-If no Makefile exists, compile manually using the following command:
+### Interrupt Handling
+1. Timer Interrupts
+   - Generated every 10ms
+   - Triggers scheduler
+   - Updates system time
 
-```bash
-g++ -std=c++11 -o GTUOS 8080emu.cpp memory.cpp gtuos.cpp main.cpp
+2. System Call Interrupts
+   - Entry point: 0x0000
+   - Register preservation
+   - Error handling
+   - Return value passing
+
+### Building System
+
+#### Prerequisites
+- C++ compiler with C++17 support
+- Make build system
+- 8080 assembler (recommended: ASM80)
+
+#### Build Process
+1. Compile Core Components:
+   ```bash
+   make emulator    # Build emulator
+   make memory      # Build memory manager
+   make os          # Build OS core
+   ```
+
+2. Assemble Programs:
+   ```bash
+   # Using online assembler (www.asm80.com)
+   1. Upload .asm file
+   2. Select 8080 architecture
+   3. Generate .com file
+   ```
+
+3. Full Build:
+   ```bash
+   make all         # Build everything
+   make clean       # Clean build files
+   make rebuild     # Clean and rebuild
+   ```
+
+### Project Structure
 ```
-### 3. Assemble Sample Programs
-
-Use an online Intel 8080 assembler like:
-
-🔗 http://www.sensi.org/~svo/i8080/
-
-To assemble:
-
-- Open a `.asm` file (e.g., `Sum.asm`) in a text editor.
-- Paste its content into the assembler.
-- Assemble the program and download the resulting `.com` binary.
-- Place the `.com` file in the same directory as the emulator.
-
----
-
-### 4. Run the Emulator
-
-Use the following command to run your assembled program:
-
-```bash
-./GTUOS Sum.com 0
+I8080-Microkernel/
+├── ASM/                    # Assembly source files
+│   ├── Collatz.asm        # Collatz conjecture implementation
+│   ├── Sum.asm            # Number series calculator
+│   └── Primes.asm         # Prime number generator
+├── emulator_base.h         # Base emulator definitions
+│   ├── CPU definitions
+│   └── Instruction set
+├── emulator_core.cpp      # Core emulator implementation
+│   ├── Instruction decoder
+│   └── Execution engine
+├── emulator_enhanced.cpp  # Enhanced emulator features
+│   ├── Debug support
+│   └── Performance counters
+├── memory_manager.cpp     # Memory management system
+│   ├── Page table handler
+│   └── Virtual memory mapper
+├── os_core.cpp           # Operating system core
+│   ├── System call handler
+│   └── Process scheduler
+└── main.cpp              # Main program entry
 ```
----
 
-## 🔧 How It Works
+## Debugging and Monitoring
 
-- The emulator loads and executes Intel 8080 `.com` programs.
-- User programs make system calls using the `TRAP` instruction.
-- The OS handles each system call via `gtuos.cpp` (e.g., `PRINT_B`, `READ_STR`, `EXEC`, etc.).
-- A simulated timer interrupt triggers context switching.
-- A round-robin scheduler rotates execution between active processes.
-- The memory manager handles:
-  - Virtual-to-physical address mapping,
-  - Page table maintenance,
-  - Page faults and FIFO page replacement.
+### Debug Levels
+- Level 0: Normal operation
+- Level 1: Basic instruction tracing
+- Level 2: Memory access logging
+- Level 3: Full system state dumps
+- Level 4: Interrupt handling details
+- Level 5: Page fault analysis
 
----
+### Performance Monitoring
+- Instruction count
+- Page fault statistics
+- Context switch timing
+- Memory usage patterns
+- System call frequency
 
-## 🧪 Sample Programs
-
-- 📄 `Sum.asm`: Adds a sequence of numbers and displays the result.
-- 📄 `Primes.asm`: Finds and prints all prime numbers up to a user-defined number.
-- 📄 `Collatz.asm`: Computes and displays the Collatz sequence for a given number.
-
-Each program:
-
-- Uses `TRAP` instructions to access OS services.
-- Runs in its own virtual memory space.
-- Demonstrates real-world operating system features like:
-  - Process isolation,
-  - System call interfaces,
-  - Cooperative multitasking.
-
----
-
-## 🎓 Educational Value
-
-This project is ideal for:
-
-- 🧠 Learning how CPU emulation works at the instruction cycle level.
-- 🛠️ Understanding system calls, software interrupts, and traps.
-- 🧰 Exploring concepts of virtual memory and paging.
-- 🔁 Simulating multitasking, process scheduling, and kernel/user separation.
+## License
+This project is licensed under the terms specified in the LICENSE file. See LICENSE for details.

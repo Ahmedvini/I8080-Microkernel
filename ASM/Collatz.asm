@@ -34,9 +34,6 @@ GTU_OS:	PUSH D
 	pop D
 	ret
 
-
-
-
 MULT:   MVI B,0
         MVI E,9
 MULT0:  MOV A,C
@@ -50,8 +47,7 @@ MULT0:  MOV A,C
 MULT1:  RAR 
         MOV B,A 
         JMP MULT0 
-DONE: RET
-
+DONE:   RET
 
 DIV:	MOV A,D 	; NEGATE THE DIVISOR
 		CMA
@@ -94,8 +90,6 @@ DV1:	POP H
 		RAR
 		MOV E,A
 		RET
-		END
-
 
 sum	ds 2 ; will keep the sum
 indent:dw  ' ', 00H  
@@ -107,7 +101,6 @@ begin:
     MVI A,1	
 
 outterLoop:
-	
 	MOV L, A ; Keep original value of A
 	SUI 26	 ; A=A-25
 	JZ exit  ; Exit if the number is more than 25
@@ -120,7 +113,6 @@ outterLoop:
 	MOV A, L  ; Restore A
 	INR A 	  ; Increase A to continue looping 
 	JMP outterLoop	; Continue looping 
-
 
 loop:
     CALL printNumbers
@@ -189,35 +181,37 @@ multWith3:
     MOV A, C 
     ADI 1 
 	MOV H, A 
-    ; NOV A IS N*3+1
+    ; NOW A IS N*3+1
     RET 
 
 setValue:
 	MOV A, H
 	JMP outterLoop
 
-printInitialNumber: 
-	PUSH B
-	PUSH PSW
-	MOV B, A 
-	MVI A, PRINT_B
-	CALL GTU_OS
-	LXI B, semicolon
-	MVI A, PRINT_STR
-	CALL GTU_OS
-	POP psw
-	POP B
-	RET 
+printInitialNumber:
+    PUSH B
+    PUSH PSW
+    MOV B, A
+    MVI A, PRINT_B
+    CALL GTU_OS
+    LXI B, semicolon
+    MVI A, PRINT_STR
+    CALL GTU_OS
+    POP PSW
+    POP B
+    RET
 
 printNewLine:
-	PUSH B
-	PUSH PSW 
-	LXI B, newline
-	MVI A, PRINT_STR
-	CALL GTU_OS
-	POP PSW
-	POP B 
-	RET 	
-exit:
-    MVI A,9
+    PUSH B
+    LXI B, newline
+    MVI A, PRINT_STR
     CALL GTU_OS
+    POP B
+    RET
+
+exit:
+    MVI A, PROCESS_EXIT
+    CALL GTU_OS
+    RET
+
+END

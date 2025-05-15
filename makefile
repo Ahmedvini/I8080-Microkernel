@@ -1,19 +1,22 @@
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -g
 
-all: compile
+SRCS = main.cpp emulator_core.cpp emulator_enhanced.cpp memory_manager.cpp os_core.cpp
+OBJS = $(SRCS:.cpp=.o)
+TARGET = os_executable
 
-compile: 8080emu.o gtuos.o main.o memory.o
-	g++ 8080emu.o  gtuos.o main.o memory.o -o GTUOS
+.PHONY: all clean test
 
-main.o: main.cpp
-	g++ -g -c -std=c++11 main.cpp
+all: $(TARGET)
 
-8080emu.o: 8080emu.cpp
-	g++ -g -c -std=c++11 8080emu.cpp
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-gtuos.o: gtuos.cpp
-	g++ -g -c -std=c++11 gtuos.cpp
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $<
 
-memory.o: memory.cpp
-	g++ -g -c -std=c++11 memory.cpp
+test: $(TARGET)
+	./$(TARGET) test
+
 clean:
-	rm *.o GTUOS
+	rm -f $(OBJS) $(TARGET)
